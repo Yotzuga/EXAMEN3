@@ -1,0 +1,7 @@
+{
+    "spawnInterval": 2.5,
+    "playerSpeed": 200.0,
+    "playerMaxHealth": 100.0,
+    "enemyMaxHealth": 30.0,
+    "damagePerCollision": 10.0
+}
