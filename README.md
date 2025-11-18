@@ -1,4 +1,4 @@
-# Examen2 
+# Examen3 FALTA ACTUALIZAR
 
 ## Resumen
 Proyecto MEGAMAN con las clases principales: `Game`, `World`, `Entity` y `Component` (y componentes derivados `TransformComponent`, `SpriteComponent`, `ColliderComponent`). El juego crea entidades, las mueve con un `TransformComponent`, dibuja usando `SpriteComponent` y comprueba colisiones con `ColliderComponent`.
