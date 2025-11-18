@@ -25,8 +25,8 @@ public:
 class SpawnEvent : public Event
 {
 public:
-    std::string entityType; // Tipo de entidad a spawnear (ej: "Enemy", "Player")
-    float x, y;             // Posición de spawn
+    std::string entityType; //
+    float x, y;             //
 
     SpawnEvent(const std::string &type, float posX, float posY);
     std::string getType() const override;

@@ -17,6 +17,7 @@ private:
     std::mt19937 m_Rng;
     std::string m_EnemySprite1;
     std::string m_EnemySprite2;
+    int m_CurrentEnemyCount = 0;
 
 public:
     SpawnSystem(SDL_Renderer *renderer, float worldWidth, float worldHeight, float spawnInterval);

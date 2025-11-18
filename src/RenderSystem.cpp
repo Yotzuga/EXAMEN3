@@ -45,42 +45,12 @@ void RenderSystem::update(World &world, float dt)
         auto *sprite = e->GetComponent<SpriteComponent>();
         auto *collider = e->GetComponent<ColliderComponent>();
 
-        if (!transform || !sprite)
-            continue;
-
-        // Determinar tamaño de renderizado
-        float width = 32.0f; // Tamaño por defecto
-        float height = 32.0f;
-
-        if (collider)
-        {
-            width = collider->m_Bounds.x;
-            height = collider->m_Bounds.y;
-        }
+        float width = collider ? collider->m_Bounds.x : 32.0f;
+        float height = collider ? collider->m_Bounds.y : 32.0f;
 
         SDL_FRect dstRect{transform->m_Position.x, transform->m_Position.y, width, height};
-
-        if (sprite->m_Texture)
-        {
-            SDL_RenderTexture(m_Renderer, sprite->m_Texture, nullptr, &dstRect);
-        }
-        else
-        {
-            // Dibujar rectángulo si no hay textura
-            SDL_SetRenderDrawColor(m_Renderer, 200, 100, 100, 255);
-            SDL_RenderRect(m_Renderer, &dstRect);
-        }
+        SDL_RenderTexture(m_Renderer, sprite->m_Texture, nullptr, &dstRect);
     }
-
-    // Dibujar tiempo transcurrido (como texto simple usando rectángulos por ahora)
-    // Nota: Para texto real necesitarías SDL_ttf, por ahora usamos logging
-    // Formatear tiempo como MM:SS.mmm
-    int minutes = static_cast<int>(m_ElapsedTime) / 60;
-    int seconds = static_cast<int>(m_ElapsedTime) % 60;
-    int milliseconds = static_cast<int>((m_ElapsedTime - static_cast<int>(m_ElapsedTime)) * 1000);
-
-    // TODO: Renderizar texto en pantalla (requiere SDL_ttf)
-    // Por ahora, el tiempo se puede consultar con getElapsedTime()
 
     SDL_RenderPresent(m_Renderer);
 }

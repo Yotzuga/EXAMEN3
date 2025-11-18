@@ -33,7 +33,7 @@ bool CollisionSystem::checkAABBCollision(const glm::vec2 &pos1, const glm::vec2 
     const float r2Top = pos2.y;
     const float r2Bottom = pos2.y + size2.y;
 
-    // Verificar si NO hay colision, luego negar
+    // Verificar si NO hay colision
     return !(r1Left > r2Right || r1Right < r2Left || r1Bottom < r2Top || r1Top > r2Bottom);
 }
 
@@ -90,20 +90,17 @@ void CollisionSystem::update(World &world, float dt)
     // - Cuando llega a 0.0f, se elimina del mapa
 
     auto it = m_CollisionCooldowns.begin();
-    while (it != m_CollisionCooldowns.end())
+    while (it != m_CollisionCooldowns.end()) // ← Recorre TODOS los pares
     {
-        it->second -= dt; // Reducir tiempo: 0.5 → 0.4 → 0.3 → 0.0
+        it->second -= dt; // Reduce tiempo a cada par
 
         if (it->second <= 0.0f)
         {
-            // Cooldown expirado → ELIMINAR
-            // erase() devuelve iterador al siguiente elemento válido
-            it = m_CollisionCooldowns.erase(it);
+            it = m_CollisionCooldowns.erase(it); // Elimina PAR expirado
         }
         else
         {
-            // Cooldown aún activo → PASAR AL SIGUIENTE
-            ++it;
+            ++it; // Siguiente PAR
         }
     }
 

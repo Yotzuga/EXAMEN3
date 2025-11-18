@@ -23,21 +23,11 @@ void SpawnSystem::update(World &world, float dt)
     // Verificar si es tiempo de spawnear
     if (m_TimeSinceLastSpawn >= m_SpawnInterval)
     {
-        // Contar enemigos actuales
-        int enemyCount = 0;
-        auto entities = world.GetEntities();
-        for (Entity *e : entities)
-        {
-            auto *enemyComp = e->GetComponent<EnemyComponent>();
-            if (enemyComp)
-                enemyCount++;
-        }
-
         // Solo spawnear si hay menos de 10 enemigos
-        if (enemyCount < 10)
+        if (m_CurrentEnemyCount < 10)
         {
             spawnEnemy(world);
-            spdlog::info("Enemigos actuales: {}/10", enemyCount + 1);
+            spdlog::info("Enemigos actuales: {}/10", m_CurrentEnemyCount);
         }
         else
         {
@@ -87,6 +77,8 @@ void SpawnSystem::spawnEnemy(World &world)
 
     auto transform = std::make_unique<TransformComponent>(px, py, vx, vy);
     enemy.AddComponent(std::move(transform));
+
+    m_CurrentEnemyCount++; // Incrementar contador
 
     spdlog::debug("Enemigo spawneado: ID={}, Pos=({:.1f},{:.1f}), Vel=({:.1f},{:.1f})",
                   enemy.m_Id, px, py, vx, vy);
