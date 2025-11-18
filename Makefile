@@ -58,14 +58,6 @@ build_include:
 		-I./external/SDL3/include \
 		-Iexternal/SDL3_Image/include \
 		-o ./bin/World.o
-
-	g++ -c ./src/colisiones.cpp \
-		-I./include \
-		-Iexternal/spdlog/include \
-		-Iexternal/GLM/include \
-		-I./external/SDL3/include \
-		-Iexternal/SDL3_Image/include \
-		-o ./bin/colisiones.o
 		
 	g++ -c ./src/Game.cpp \
 		-I./include \

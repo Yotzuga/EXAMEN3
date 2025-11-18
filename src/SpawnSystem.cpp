@@ -50,8 +50,9 @@ void SpawnSystem::update(World &world, float dt)
 
 void SpawnSystem::spawnEnemy(World &world)
 {
-    // Crear nueva entidad enemiga
+    // ---------------------Crear el enemigo---------------------//
     Entity &enemy = world.createEntity();
+    // %%%Uso de move() para mover ownership de los componentes a la entidad (m_Components)%%%
 
     // EnemyComponent
     auto enemyComp = std::make_unique<EnemyComponent>();
@@ -61,15 +62,16 @@ void SpawnSystem::spawnEnemy(World &world)
     std::uniform_int_distribution<int> spriteDist(0, 1);
     bool useSprite1 = (spriteDist(m_Rng) == 0);
 
+    // Sprite y tamaño según elección
     std::string spriteAsset = useSprite1 ? m_EnemySprite1 : m_EnemySprite2;
     float width = useSprite1 ? 30.0f : 24.0f;
     float height = useSprite1 ? 50.0f : 29.0f;
 
-    // SpriteComponent
+    // SpriteComponent del enemigo
     auto sprite = std::make_unique<SpriteComponent>(spriteAsset, m_Renderer);
     enemy.AddComponent(std::move(sprite));
 
-    // ColliderComponent
+    // ColliderComponent del enemigo
     auto collider = std::make_unique<ColliderComponent>(width, height);
     enemy.AddComponent(std::move(collider));
 
@@ -85,10 +87,6 @@ void SpawnSystem::spawnEnemy(World &world)
 
     auto transform = std::make_unique<TransformComponent>(px, py, vx, vy);
     enemy.AddComponent(std::move(transform));
-
-    // HealthComponent (30 HP)
-    auto health = std::make_unique<HealthComponent>(30);
-    enemy.AddComponent(std::move(health));
 
     spdlog::debug("Enemigo spawneado: ID={}, Pos=({:.1f},{:.1f}), Vel=({:.1f},{:.1f})",
                   enemy.m_Id, px, py, vx, vy);

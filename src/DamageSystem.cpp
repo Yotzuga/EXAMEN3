@@ -41,7 +41,7 @@ void DamageSystem::update(World &world, float dt)
                         // Verificar si murio
                         if (health->isDead())
                         {
-                            spdlog::error("¡¡¡ GAME OVER !!! Entidad {} murió", e->m_Id);
+                            spdlog::error("GAME OVER Entidad {} murio", e->m_Id);
 
                             // Activar Game Over
                             if (m_GameOver)

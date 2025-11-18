@@ -14,7 +14,7 @@ void EnemyAISystem::update(World &world, float dt)
 {
     auto entities = world.GetEntities();
 
-    // Buscar al jugador
+    // Buscar al jugador , Se puede mejorar buscando solo una vez fuera del bucle. pero ya se hizo el template GetComponent<>
     Entity *player = nullptr;
     TransformComponent *playerTransform = nullptr;
 
@@ -30,7 +30,7 @@ void EnemyAISystem::update(World &world, float dt)
     }
 
     if (!player || !playerTransform)
-        return; // No hay jugador
+        return; // No hay jugador.
 
     // Actualizar todos los enemigos: solo cambiar dirección si jugador está en zona de focus
     for (Entity *e : entities)
@@ -39,12 +39,12 @@ void EnemyAISystem::update(World &world, float dt)
         if (!enemy)
             continue; // No es un enemigo
 
-        auto *transform = e->GetComponent<TransformComponent>();
-        if (!transform)
+        auto *EnemyTransform = e->GetComponent<TransformComponent>();
+        if (!EnemyTransform)
             continue;
 
         // Calcular distancia al jugador
-        glm::vec2 direction = playerTransform->m_Position - transform->m_Position;
+        glm::vec2 direction = playerTransform->m_Position - EnemyTransform->m_Position;
         float distance = glm::length(direction);
 
         // SOLO modificar velocidad si el jugador está dentro del rango de focus
@@ -52,10 +52,7 @@ void EnemyAISystem::update(World &world, float dt)
         {
             // Jugador en zona de focus: perseguir al jugador
             direction = glm::normalize(direction);
-            transform->m_Velocity = direction * enemy->speed;
-
-            // Debug opcional
-            // spdlog::debug("Enemigo {} FOCUS al jugador (distancia: {:.1f})", e->m_Id, distance);
+            EnemyTransform->m_Velocity = direction * enemy->speed;
         }
         // Si jugador está FUERA de la zona de focus:
         // NO HACER NADA - el enemigo mantiene su velocidad actual (aleatoria inicial)

@@ -26,9 +26,10 @@ protected:
     float m_Alto;             // Dimensión alto
     bool m_IsRunning;         // ¿Juego activo?
     bool m_GameOver;          // ¿Juego terminado?
+    bool m_GameOverPrinted;   // ¿Ya se imprimió el Game Over?
     World m_World;            // Mundo del juego
 
-    // Sistemas ECS
+    // Sistemas nuevos
     std::unique_ptr<PlayerInputSystem> m_PlayerInputSystem;
     std::unique_ptr<MovementSystem> m_MovementSystem;
     std::unique_ptr<RenderSystem> m_RenderSystem;

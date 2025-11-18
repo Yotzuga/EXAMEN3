@@ -10,12 +10,12 @@
 RenderSystem::RenderSystem(SDL_Renderer *renderer)
     : m_Renderer(renderer), m_ElapsedTime(0.0f)
 {
-    m_StartTime = std::chrono::steady_clock::now();
+    m_StartTime = std::chrono::steady_clock::now(); // Inicializar el tiempo de inicio
 }
 
 void RenderSystem::resetTimer()
 {
-    m_StartTime = std::chrono::steady_clock::now();
+    m_StartTime = std::chrono::steady_clock::now(); // Reiniciar el tiempo de inicio
     m_ElapsedTime = 0.0f;
 }
 

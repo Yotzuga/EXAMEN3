@@ -36,17 +36,17 @@ Entity *World::GetEntityByName(const std::string &name) const
 }
 
 std::vector<Entity *> World::GetEntities() const
-{ // Devuelve vector de punteros raw para iteración
-    std::vector<Entity *> rawPtrs;
-    rawPtrs.reserve(m_Entities.size());
+{ // Devuelve vector de punteros entityList para iteración
+    std::vector<Entity *> entityList;
+    entityList.reserve(m_Entities.size());
     for (const auto &entity : m_Entities)
     {
-        rawPtrs.push_back(entity.get());
+        entityList.push_back(entity.get());
     }
-    return rawPtrs;
+    return entityList;
 }
 
-// Nuevo: crea una entidad con ID y nombre únicos
+// Crea una entidad con ID y nombre únicos
 Entity &World::createEntity()
 {
     static int entityCounter = 0;
@@ -62,7 +62,7 @@ Entity &World::createEntity()
     return *entityPtr;
 }
 
-// Nuevo: emite un evento al bus
+// Emite un evento al bus
 void World::emit(std::unique_ptr<Event> event)
 {
     spdlog::debug("Evento emitido: {}", event->getType());

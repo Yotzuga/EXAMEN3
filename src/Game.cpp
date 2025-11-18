@@ -12,7 +12,7 @@
 using json = nlohmann::json;
 
 Game::Game()
-    : m_Window(nullptr), m_Renderer(nullptr), m_Ancho(800), m_Alto(600), m_IsRunning(false), m_GameOver(false), m_World()
+    : m_Window(nullptr), m_Renderer(nullptr), m_Ancho(800), m_Alto(600), m_IsRunning(false), m_GameOver(false), m_GameOverPrinted(false), m_World()
 {
 }
 
@@ -68,13 +68,27 @@ bool Game::Initialize()
     }
 
     // Inicializar sistemas ECS
+
+    // Inicializar sistemas de respuesta WASD del Player y restricciones de pantalla del player
     m_PlayerInputSystem = std::make_unique<PlayerInputSystem>(m_Ancho, m_Alto, 200.0f);
+
+    // Inicializar sistema de movimiento del Player y enemigos
     m_MovementSystem = std::make_unique<MovementSystem>();
+
+    // Inicializar sistema de renderizado
     m_RenderSystem = std::make_unique<RenderSystem>(m_Renderer);
+
+    // Inicializar sistema de colisiones y rebotes en bordes mundo player y enemigos
     m_CollisionSystem = std::make_unique<CollisionSystem>();
     m_CollisionSystem->SetWorldDimensions(m_Ancho, m_Alto); // Configurar dimensiones del mundo
+
+    // Inicializar sistema de daño y muerte del Player
     m_DamageSystem = std::make_unique<DamageSystem>(&m_IsRunning, &m_GameOver);
+
+    // Inicializar sistema de spawn de enemigos
     m_SpawnSystem = std::make_unique<SpawnSystem>(m_Renderer, m_Ancho, m_Alto, spawnInterval);
+
+    // Inicializar sistema de IA de enemigos primitivo no final para el Proyecto.
     m_EnemyAISystem = std::make_unique<EnemyAISystem>();
 
     spdlog::info("Sistemas ECS inicializados correctamente");
@@ -84,22 +98,29 @@ bool Game::Initialize()
 
 void Game::Start()
 {
-    // Crear el jugador (Megaman)
+    // ---------------------Crear el jugador (Megaman)---------------------//
     Entity &player = m_World.createEntity();
 
+    // %%%Uso de move() para mover ownership de los componentes a la entidad (m_Components)%%%
+
+    //  Componente de jugador
     auto playerComp = std::make_unique<PlayerComponent>();
     player.AddComponent(std::move(playerComp));
 
+    // Posición inicial en el centro
     auto playerTransform = std::make_unique<TransformComponent>(m_Ancho / 2.0f, m_Alto / 2.0f, 0.0f, 0.0f);
     player.AddComponent(std::move(playerTransform));
 
+    // Sprite del jugador
     auto playerSprite = std::make_unique<SpriteComponent>("./assets/megaman.png", m_Renderer);
     player.AddComponent(std::move(playerSprite));
 
+    // Tamaño de colisión aproximado
     auto playerCollider = std::make_unique<ColliderComponent>(30.0f, 34.0f);
     player.AddComponent(std::move(playerCollider));
 
-    auto playerHealth = std::make_unique<HealthComponent>(100);
+    // Vida del jugador
+    auto playerHealth = std::make_unique<HealthComponent>(10);
     player.AddComponent(std::move(playerHealth));
 
     spdlog::info("Jugador creado: ID={}, Posicion=({:.1f},{:.1f})",
@@ -146,52 +167,48 @@ void Game::Update(float deltaTime)
     // Si está en Game Over, no actualizar la lógica del juego
     if (m_GameOver)
         return;
+    // Actualizar sistemas ECS en orden adecuado
 
-    if (m_SpawnSystem)
-        m_SpawnSystem->update(m_World, deltaTime);
-
-    if (m_PlayerInputSystem)
-        m_PlayerInputSystem->update(m_World, deltaTime);
-
-    if (m_EnemyAISystem)
-        m_EnemyAISystem->update(m_World, deltaTime);
-
-    if (m_MovementSystem)
-        m_MovementSystem->update(m_World, deltaTime);
-
-    if (m_CollisionSystem)
-        m_CollisionSystem->update(m_World, deltaTime);
-
-    if (m_DamageSystem)
-        m_DamageSystem->update(m_World, deltaTime);
+    // 1. SpawnSystem primero para crear enemigos nuevos
+    m_SpawnSystem->update(m_World, deltaTime);
+    // 2. Luego input del jugador
+    m_PlayerInputSystem->update(m_World, deltaTime);
+    // 3. Luego IA de enemigos
+    m_EnemyAISystem->update(m_World, deltaTime);
+    // 4. Luego movimiento de todas las entidades
+    m_MovementSystem->update(m_World, deltaTime);
+    // 5. Luego colisiones y rebotes en bordes
+    m_CollisionSystem->update(m_World, deltaTime);
+    // 6. Finalmente daño y muerte del jugador
+    m_DamageSystem->update(m_World, deltaTime);
 }
 
 void Game::Render()
 {
-    if (m_RenderSystem)
+    if (m_GameOver)
     {
-        if (m_GameOver)
-        {
-            // Renderizar pantalla de Game Over
-            SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, 255); // Fondo negro
-            SDL_RenderClear(m_Renderer);
+        // Renderizar pantalla de Game Over
+        SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, 255); // Fondo negro
+        SDL_RenderClear(m_Renderer);
 
-            // Mostrar tiempo final (el RenderSystem ya tiene el tiempo acumulado)
+        // Mostrar tiempo final SOLO UNA VEZ
+        if (!m_GameOverPrinted)
+        {
             float finalTime = m_RenderSystem->getElapsedTime();
 
-            // Nota: Para mostrar texto necesitarías SDL_ttf, pero por ahora
-            // solo dibujamos el fondo negro y el log muestra el tiempo
             spdlog::info("=== GAME OVER ===");
             spdlog::info("Tiempo Final: {:.2f} segundos", finalTime);
             spdlog::info("Presiona ENTER o ESC para salir");
 
-            SDL_RenderPresent(m_Renderer);
+            m_GameOverPrinted = true; // Marcar como impreso
         }
-        else
-        {
-            // Renderizado normal del juego
-            m_RenderSystem->update(m_World, 0.0f);
-        }
+
+        SDL_RenderPresent(m_Renderer);
+    }
+    else
+    {
+        // Renderizado normal del juego
+        m_RenderSystem->update(m_World, 0.0f);
     }
 }
 

@@ -21,7 +21,7 @@ public:
     void AddComponent(std::unique_ptr<Component> component); // Agrega un componente a la entidad.
     Component *GetComponent(const std::string &type) const;  // Busca y devuelve un componente por type (DEPRECATED - usar template)
 
-    // Metodo templated TYPE-SAFE
+    // Metodo template para obtener componente por tipo
     template <typename T>
     T *GetComponent() const
     {

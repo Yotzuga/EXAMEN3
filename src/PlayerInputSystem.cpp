@@ -60,8 +60,10 @@ void PlayerInputSystem::update(World &world, float dt)
         // Aplicar velocidad
         transform->m_Velocity = velocity;
 
-        // Asegurar que el jugador no se salga de los límites de la pantalla
-        if (collider)
+        // Requerimiento de PREGUNTA 2 – Movimientos, input y renderizado (4 puntos)
+        // El void CollisionSystem::checkWorldBoundaries() se encarga de que el jugador y enemigo no se salga de los límites del mundo.
+        // Por lo tanto, estaria redundando aqui.
+        /*if (collider)
         {
             // Clamp posición X
             transform->m_Position.x = std::clamp(transform->m_Position.x,
@@ -71,6 +73,6 @@ void PlayerInputSystem::update(World &world, float dt)
             transform->m_Position.y = std::clamp(transform->m_Position.y,
                                                  0.0f,
                                                  m_WorldHeight - collider->m_Bounds.y);
-        }
+        }*/
     }
 }
